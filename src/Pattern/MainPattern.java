@@ -128,7 +128,7 @@ public class MainPattern extends javax.swing.JFrame implements Runnable {
             z[j] = sigmoid_bipolar(z_net[j]);
         }
 
-        //feed-forward layer hidden-output
+        // Feed-forward hidden layer-output
         for (byte j = 0; j < y.length; j++) {
             y_net[j] = 0;
             for (byte i = 0; i < z.length; i++) {
@@ -2830,9 +2830,9 @@ public class MainPattern extends javax.swing.JFrame implements Runnable {
         jLabel8.setFont(new java.awt.Font("Roboto", 0, 11)); // NOI18N
         jLabel8.setText("Tolerance");
 
-        alphaField.setText("0.1");
+        alphaField.setText("0.01");
 
-        toleranceField.setText("0.1");
+        toleranceField.setText("0.01");
 
         btnTraining.setBackground(new java.awt.Color(38, 200, 211));
         btnTraining.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -2869,7 +2869,7 @@ public class MainPattern extends javax.swing.JFrame implements Runnable {
         jLabel9.setFont(new java.awt.Font("Roboto", 0, 11)); // NOI18N
         jLabel9.setText("Epoch");
 
-        epochField.setText("10000");
+        epochField.setText("1000000");
 
         jLabel10.setFont(new java.awt.Font("Roboto", 0, 11)); // NOI18N
         jLabel10.setText("Max Error Value");
@@ -3934,10 +3934,6 @@ public class MainPattern extends javax.swing.JFrame implements Runnable {
     }//GEN-LAST:event_btnTestMouseClicked
 
     private void btnTrainingMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnTrainingMouseClicked
-//        int x = (int)(Math.random()*999999999);
-//        lbl_maxErrorValue.setText("0.0"+String.valueOf(x));
-
-//        training();
         stop = false;
         thread = new Thread(this);
         thread.start();
@@ -4151,31 +4147,31 @@ public class MainPattern extends javax.swing.JFrame implements Runnable {
         btnStop.setEnabled(true);
         btnStop.setBackground(new Color(247,61,83));
         
-        //baca paramater inisialisasi
+        // Read paramater inisialisasi
         double alpha = Double.valueOf(alphaField.getText());
         double teta = Double.valueOf(toleranceField.getText());
         double maxEpoch = Double.valueOf(epochField.getText());
 
-        //inisialisasi bobot layer input-hidden
+        // Inisialisasi bobot layer input-hidden
         for (byte j = 0; j < z.length; j++) {
             for (byte i = 0; i < pola.x[0].length; i++) {
                 v[i][j] = Math.random();
             }
         }
 
-        //inisialisasi bias ke layer hidden
+        // Inisialisasi bias ke hidden layer
         for (byte j = 0; j < z.length; j++) {
             bias_z[j] = Math.random();
         }
 
-        //inisialisasi bobot layer hidden-output
+        // Inisialisasi bobot hidden layer-output
         for (byte j = 0; j < y.length; j++) {
             for (byte i = 0; i < z.length; i++) {
                 w[i][j] = Math.random();
             }
         }
 
-        //inisialisasi bias ke layer output
+        // Inisialisasi bias ke layer output
         for (byte j = 0; j < y.length; j++) {
             bias_y[j] = Math.random();
         }
@@ -4183,7 +4179,7 @@ public class MainPattern extends javax.swing.JFrame implements Runnable {
         double err = 0;
         double mse = 0;
         int epoch = 1;
-        boolean ada_error = false;
+        boolean isError = false;
         do {
             System.out.println("=====Epoch -> " + epoch);
             logDataField.setText("");
@@ -4191,9 +4187,9 @@ public class MainPattern extends javax.swing.JFrame implements Runnable {
             lbl_epoch.setText(String.valueOf(epoch));
 
             mse = 0;
-            ada_error = false;
+            isError = false;
             for (byte k = 0; k < pola.x.length; k++) {
-                //feed-forward layer input-hidden
+                // Feed-forward layer input-hidden
                 for (byte j = 0; j < z.length; j++) {
                     z_net[j] = 0;
                     for (byte i = 0; i < pola.x[k].length; i++) {
@@ -4203,7 +4199,7 @@ public class MainPattern extends javax.swing.JFrame implements Runnable {
                     z[j] = sigmoid_bipolar(z_net[j]);
                 }
 
-                //feed-forward layer hidden-output
+                // Feed-forward layer hidden-output
                 for (byte j = 0; j < y.length; j++) {
                     y_net[j] = 0;
                     for (byte i = 0; i < z.length; i++) {
@@ -4213,8 +4209,8 @@ public class MainPattern extends javax.swing.JFrame implements Runnable {
                     y[j] = sigmoid_bipolar(y_net[j]);
                 }
 
-                //hitung error output
-                //hitung koreksi bobot hidden-output
+                // Calculate error output
+                // Calculate & koreksi bobot hidden-output
                 err = 0;
                 double[] delta = new double[y.length];
                 for (byte j = 0; j < y.length; j++) {
@@ -4222,24 +4218,18 @@ public class MainPattern extends javax.swing.JFrame implements Runnable {
                     System.out.println("error node ke-"+(j+1)+"=" + e);
 //                    logDataField.append("Error node ke: "+(j + 1)+" -> "+ e+"\n");
                     err += Math.pow(e, 2);
-                    //err += Math.abs(e);
                     delta[j] = e * turunan_sigmoid_bipolar(y_net[j]);
-                    //System.out.println("delta="+delta[j]);
+//                    System.out.println("delta="+delta[j]);
                 }
 
-                //err /= jml_output;
+                
                 err *= 0.5;
-                //if (err>teta) ada_error=true;
                 mse += (err * err);
-                //mse += err;
+                
                 System.out.println("Error pola ke-" + (k + 1) + " -> " + err);
                 logDataField.append("Error pola "+(k + 1)+" = "+ err+"\n");
-                //tf_error.setText(String.valueOf(err));
-                //if (err > teta) {
-                //stop = false;
-                //}
 
-                //update bobot layer hidden-output
+                // Update bobot hidden layer-output
                 for (byte j = 0; j < y.length; j++) {
                     for (byte i = 0; i < z.length; i++) {
                         w[i][j] += (alpha * delta[j] * z[i]);
@@ -4249,7 +4239,7 @@ public class MainPattern extends javax.swing.JFrame implements Runnable {
                     //System.out.println("bias_y["+j+"]="+bias_y[j]);
                 }
 
-                //hitung koreksi bobot input-hidden
+                // Calculate & koreksi bobot input-hidden
                 double[] delta2 = new double[z.length];
                 for (byte j = 0; j < z.length; j++) {
                     double error_hidden = 0;
@@ -4257,10 +4247,10 @@ public class MainPattern extends javax.swing.JFrame implements Runnable {
                         error_hidden += (delta[i] * w[j][i]);
                     }
                     delta2[j] = error_hidden * turunan_sigmoid_bipolar(z_net[j]);
-                    //System.out.println("delta2="+delta2[j]);
+//                    System.out.println("delta2="+delta2[j]);
                 }
 
-                //update bobot layer input-hidden
+                // Update bobot layer input-hidden
                 for (byte j = 0; j < z.length; j++) {
                     for (byte i = 0; i < pola.x[k].length; i++) {
                         v[i][j] += (alpha * delta2[j] * pola.x[k][i]);
@@ -4287,7 +4277,6 @@ public class MainPattern extends javax.swing.JFrame implements Runnable {
                 btnTraining.setBackground(new Color(38,200,211));
             }
         } while (mse > teta && !stop);
-        //} while (ada_error && !stop);
         btnStop.setEnabled(false);
     }
 }
